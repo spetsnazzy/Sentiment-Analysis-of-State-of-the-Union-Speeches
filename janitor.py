@@ -3,7 +3,7 @@ import pandas as pd
 import re
 import string
 
-presidents = ['obama', 'bush', 'clinton', 'reagan', 'nixon']
+presidents = ['Obama', 'Bush', 'Clinton', 'Reagan', 'Nixon']
 
 data = {}
 
@@ -17,12 +17,21 @@ def combine_text(listoftext):
     return combinedtext
 
 # Makes all letters lowercase, removes punctuation
-def clean_textr1(text):
+def cleaner(text):
+    # Makes all text lowercase
     text = text.lower()
     text = re.sub('\[.*?\]', '', text)
     text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
+    # Removes digits
+    text = re.sub('[0123456789]', '', text)
     text = re.sub('\w*\d\w*', '', text)
+    # Removes new lines and \r
+    text = re.sub('[\n\r]', '', text)
+    # Removes instances of the word transcript
+    text = re.sub('transcript', '', text)
     return text
+    # Hyphens and apostrophes have not been removed
+
 
 # Combines transcripts and president keys
 datacombined = {key: [combine_text(value)] for (key, value) in data.items()}
@@ -31,9 +40,12 @@ pd.set_option('max_colwidth', 150)
 
 # Creates the table
 data_df = pd.DataFrame.from_dict(datacombined).transpose()
-data_df.columns = ['transcript']
+data_df.columns = ['Transcripts']
 data_df = data_df.sort_index()
 
 # Lambda def of first round cleaning function
-round1 = lambda x: clean_textr1(x)
-cleandata = pd.DataFrame(data_df.transcript.apply(round1))
+round1 = lambda x: cleaner(x)
+cleandata = pd.DataFrame(data_df.Transcripts.apply(round1))
+print(cleandata)
+
+data_df.to_pickle("corpus.pickle")
