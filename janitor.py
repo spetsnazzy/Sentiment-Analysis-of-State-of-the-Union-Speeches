@@ -49,7 +49,7 @@ round1 = lambda x: cleaner(x)
 cleandata = pd.DataFrame(data_df.Transcripts.apply(round1))
 
 
-data_df.to_pickle("corpus.pickle")
+pickle.dump(cleandata, open("corpus.pickle", "wb"))
 
 ###########################################################
 
@@ -58,3 +58,5 @@ data_cv = cv.fit_transform(cleandata.Transcripts)
 data_dtm = pd.DataFrame(data_cv.toarray(), columns = cv.get_feature_names())
 data_dtm.index = cleandata.index
 print(data_dtm)
+
+pickle.dump(data_dtm, open("data_term_matrix.pickle", "wb"))
