@@ -2,6 +2,7 @@ import pickle
 import pandas as pd
 import re
 import string
+from sklearn.feature_extraction.text import CountVectorizer
 
 presidents = ['Obama', 'Bush', 'Clinton', 'Reagan', 'Nixon']
 
@@ -46,6 +47,14 @@ data_df = data_df.sort_index()
 # Lambda def of first round cleaning function
 round1 = lambda x: cleaner(x)
 cleandata = pd.DataFrame(data_df.Transcripts.apply(round1))
-print(cleandata)
+
 
 data_df.to_pickle("corpus.pickle")
+
+###########################################################
+
+cv = CountVectorizer(stop_words='english')
+data_cv = cv.fit_transform(cleandata.Transcripts)
+data_dtm = pd.DataFrame(data_cv.toarray(), columns = cv.get_feature_names())
+data_dtm.index = cleandata.index
+print(data_dtm)
